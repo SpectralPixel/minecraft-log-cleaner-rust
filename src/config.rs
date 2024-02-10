@@ -1,11 +1,13 @@
 use std::error::Error;
 use std::fs;
+use std::vec::IntoIter;
 use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct Config {
     raw_log_path: String,
     filtered_log_path: String,
+    blacklist: Vec<String>,
 }
 
 impl Config {
@@ -22,5 +24,10 @@ impl Config {
 
     pub fn get_filtered_log_path(&self) -> &String {
         &self.filtered_log_path
+    }
+
+    pub fn get_blacklist(&self) -> IntoIter<String> {
+        let blacklist_clone = self.blacklist.clone();
+        blacklist_clone.into_iter()
     }
 }

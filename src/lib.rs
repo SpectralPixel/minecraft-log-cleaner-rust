@@ -1,4 +1,8 @@
-use std::{error::Error, fs::File, io::Write};
+use std::{
+    error::Error,
+    fs::File,
+    io::Write
+};
 
 pub mod config;
 
@@ -7,7 +11,19 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     let raw_log = config.read_raw_log()?;
     let mut filtered_output = String::new();
 
-    for line in raw_log.lines() {
+    for line in raw_log.lines().filter(
+        |line| {
+            let mut contains_illegal = false;
+            let line = line.to_lowercase();
+            for item in config.get_blacklist() {
+                if line.contains(&item.to_lowercase()) {
+                    contains_illegal = true;
+                    break;
+                }
+            }
+            !contains_illegal // filter for items that don't contain a blacklisted phrase
+        }
+    ) {
         let line = format!("{line}\n");
         filtered_output.push_str(&line);
     }

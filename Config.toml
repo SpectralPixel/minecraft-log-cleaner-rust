@@ -1,9 +1,12 @@
 raw_log_path = "server.log"
 filtered_log_path = "output/filtered.log"
+blacklist = [
+    "[INFO] Unknown console command. Type \"help\" for help.",
+    "[INFO] /51.15.34.47:61000 lost connection",
+    "[Maxcraft]",
+]
 #player_activity_log = "output/player.log"
 
-
-# [blacklist]
 
 
 # [format_element]
