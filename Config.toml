@@ -1,10 +1,11 @@
+date_range = [0, 10] # inclusive - exclusive
+time_range = [11, 19] # inclusive - exclusive
+content_start_char_pos = 20
 raw_log_path = "server.log"
-filtered_log_path = "output/filtered.log"
-blacklist = [
-    "[INFO] Unknown console command. Type \"help\" for help.",
-    "[INFO] /51.15.34.47:61000 lost connection",
-    "[Maxcraft]",
-]
+output_directory = "output"
+blacklist = []
+auto_blacklist = true
+auto_blacklist_percentage = 0.1
 #player_activity_log = "output/player.log"
 
 
