@@ -25,7 +25,32 @@ pub fn get_line_counts(config: &Config, raw_log: &String) -> HashMap<String, f64
     line_counts
 }
 
+pub fn filter_log(config: &Config, raw_log: &String) -> String {
+    println!("Filtering blacklisted lines out of log...");
 
+    let mut filtered_log = String::new();
+
+    for line in raw_log.lines().filter(
+        |line| {
+            let mut contains_illegal = false;
+            let line = line.to_lowercase();
+            for item in config.get_blacklist() {
+                if line.contains(&item.to_lowercase()) {
+                    contains_illegal = true;
+                    break;
+                }
+            }
+            !contains_illegal // filter for items that don't contain a blacklisted phrase
+        }
+    ) {
+        let line = format!("{line}\n");
+        filtered_log.push_str(&line);
+    }
+
+    println!("Log filtered!");
+
+    filtered_log
+}
 
 fn trim_line_starts(content_start: usize, text: &String) -> String {
     let trimmed_text = text.lines().flat_map(
@@ -36,6 +61,8 @@ fn trim_line_starts(content_start: usize, text: &String) -> String {
 
     trimmed_text
 }
+
+
 
 #[cfg(test)]
 mod tests {

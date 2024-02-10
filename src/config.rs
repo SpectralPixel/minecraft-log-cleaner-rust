@@ -17,8 +17,10 @@ pub struct Config {
 
 impl Config {
     pub fn build() -> Result<Self, Box<dyn Error>> {
+        println!("Loading configuration file... (Config.toml)");
         let config = fs::read_to_string("Config.toml")?;
         let config: Config = toml::from_str(&config)?;
+        println!("\"Config.toml\" loaded!");
         Ok(config)
     }
 
@@ -35,7 +37,10 @@ impl Config {
     }
 
     pub fn get_raw_log(&self) -> Result<String, Box<dyn Error>> {
-        let raw_log = fs::read_to_string(&self.raw_log_path)?;
+        let path = &self.raw_log_path;
+        println!("Reading raw log file...  ({path})");
+        let raw_log = fs::read_to_string(path)?;
+        println!("Loaded contents of raw log file!");
         Ok(raw_log)
     }
 

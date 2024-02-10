@@ -14,6 +14,7 @@ pub fn run() -> Result<(), Box<dyn Error>> {
 
     if config.get_auto_blacklist() {
         todo!(); // MAKE SURE TO FILTER OUT ACTIVITY THAT IS 100% KNOWN TO BE PLAYER ACTIVITY BEFORE SORTING LINES. ONLY SYSTEM MESSAGES SHOULD BE SORTED OUT
+        println!("Engaging auto-blacklisting...");
         let mut line_counts = formatter::get_line_counts(&config, &raw_log);
         let mut auto_blacklisted_lines: Vec<String> = Vec::new();
         for line in line_counts.drain().filter(|x| x.1 > config.get_auto_blacklist_percentage()) {
@@ -24,41 +25,26 @@ pub fn run() -> Result<(), Box<dyn Error>> {
             // println!("{val}% - {key}")
         }
         config.add_to_blacklist(&mut auto_blacklisted_lines);
+        println!("Auto-blacklisting complete!")
     }
-    let filtered_log = filter_log(&config, &raw_log);
+
+    let filtered_log = formatter::filter_log(&config, &raw_log);
 
     write_output_to_file(&config, &"filtered.log", filtered_log)?;
 
     Ok(())
 }
 
-fn filter_log(config: &Config, raw_log: &String) -> String {
-    let mut filtered_log = String::new();
-
-    for line in raw_log.lines().filter(
-        |line| {
-            let mut contains_illegal = false;
-            let line = line.to_lowercase();
-            for item in config.get_blacklist() {
-                if line.contains(&item.to_lowercase()) {
-                    contains_illegal = true;
-                    break;
-                }
-            }
-            !contains_illegal // filter for items that don't contain a blacklisted phrase
-        }
-    ) {
-        let line = format!("{line}\n");
-        filtered_log.push_str(&line);
-    }
-
-    filtered_log
-}
-
 fn write_output_to_file(config: &Config, file_name: &str, output: String) -> Result<(), Box<dyn Error>> {
     let output_dir = config.output_directory();
     let path = format!("{output_dir}/{file_name}");
-    let mut file_to_write = File::create(path)?;
+
+    println!("Writing file [{path}]");
+
+    let mut file_to_write = File::create(&path)?;
     file_to_write.write(output.as_bytes())?;
+
+    println!("Successfully wrote to [{path}]!");
+
     Ok(())
 }
