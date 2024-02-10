@@ -1,36 +1,26 @@
 use std::error::Error;
 use std::fs;
-use config_error::UsageError;
+use serde::Deserialize;
 
-pub mod config_error;
-
+#[derive(Deserialize)]
 pub struct Config {
-    raw_log: String,
-    _config_file: fs::File, // use this to load config, remove the file from here later as it will no longer be needed after initialization
+    raw_log_path: String,
+    filtered_log_path: String,
 }
 
 impl Config {
-    pub fn build(args: Vec<String>) -> Result<Self, Box<dyn Error>> {
-        let raw_log: String = match args.get(1) {
-            Some(v) => {
-                let filename = v.clone();
-                let contents = fs::read_to_string(filename)?;
-                contents
-            },
-            None => return Err(Box::new(UsageError(String::from("Failure reading argument 1."))))
-        };
-        let config_file_name: String = match args.get(2) {
-            Some(v) => v.clone(),
-            None => return Err(Box::new(UsageError(String::from("Failure reading argument 2."))))
-        };
-
-        Ok(Config {
-            raw_log,
-            _config_file: fs::File::open(config_file_name)?,
-        })
+    pub fn build() -> Result<Self, Box<dyn Error>> {
+        let config = fs::read_to_string("Config.toml")?;
+        let config: Config = toml::from_str(&config)?;
+        Ok(config)
     }
 
-    pub fn raw_log(&self) -> &String {
-        &self.raw_log
+    pub fn read_raw_log(&self) -> Result<String, Box<dyn Error>> {
+        let raw_log = fs::read_to_string(&self.raw_log_path)?;
+        Ok(raw_log)
+    }
+
+    pub fn get_filtered_log_path(&self) -> &String {
+        &self.filtered_log_path
     }
 }

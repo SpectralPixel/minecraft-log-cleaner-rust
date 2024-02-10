@@ -8,4 +8,4 @@ fn main() {
     }
 }
 
-// run the program: cargo run -- test_files/raw.txt test_files/filters.json > test_files/output.txt
+// run the program: cargo run -- test_files/server.log test_files/settings.toml > test_files/cleaned.log
