@@ -1,31 +1,9 @@
 use std::collections::HashMap;
 use crate::config::Config;
-use serde::Deserialize;
-
-#[derive(Deserialize)]
-pub struct Formatting {
-    date_range: [usize; 2],
-    time_range: [usize; 2],
-    content_start_char_pos: usize,
-}
-
-impl Formatting {
-    pub fn get_date_range(&self) -> (usize, usize) {
-        (self.date_range[0], self.date_range[1])
-    }
-
-    pub fn get_time_range(&self) -> (usize, usize) {
-        (self.time_range[0], self.time_range[1])
-    }
-
-    pub fn get_content_start_pos(&self) -> usize {
-        self.content_start_char_pos
-    }
-}
 
 pub fn get_line_counts(config: &Config, raw_log: &String) -> HashMap<String, f64> {
     let mut line_counts: HashMap<String, f64> = HashMap::new();
-    let trimmed_log = trim_line_starts(config.formatting().get_content_start_pos(), raw_log);
+    let trimmed_log = trim_line_starts(config.get_content_start_pos(), raw_log);
 
     let raw_log_line_count = trimmed_log.lines().count() as f64;
     let inverse_total_line_count: f64 = 1f64 / raw_log_line_count;
@@ -55,7 +33,7 @@ pub fn filter_log(config: &Config, raw_log: &String) -> String {
         |line| {
             let mut contains_illegal = false;
             let line = line.to_lowercase();
-            for item in config.blacklist().get_blacklist_iter() {
+            for item in config.get_blacklist_iter() {
                 if line.contains(&item.to_lowercase()) {
                     contains_illegal = true;
                     break;
@@ -82,8 +60,6 @@ fn trim_line_starts(content_start: usize, text: &String) -> String {
 
     trimmed_text
 }
-
-
 
 #[cfg(test)]
 mod tests {

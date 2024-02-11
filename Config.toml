@@ -1,14 +1,11 @@
-[files]
-raw_log_path = "server.log"
-output_directory = "output"
-
-[blacklist]
 blacklist = []
 auto_blacklist = false
 auto_blacklist_percentage = 10
 auto_blacklist_passes = 3
 
-[formatting]
+raw_log_path = "server.log"
+output_directory = "output"
+
 date_range = [0, 10] # inclusive - exclusive
 time_range = [11, 19] # inclusive - exclusive
 content_start_char_pos = 20
