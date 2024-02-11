@@ -7,7 +7,7 @@ fn main() {
         let exit_code = 1;
         eprintln!("\n----- ERROR ENCOUNTERED! -----");
         eprintln!("{e}");
-        println!("exiting process with code {exit_code}...\n");
+        println!("exiting process with code {exit_code}...");
         process::exit(exit_code);
     }
 }

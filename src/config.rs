@@ -1,21 +1,19 @@
 use serde::Deserialize;
 use crate::{
-    io::Files,
-    formatter,
     config::blacklist::Blacklist,
+    formatter::{self, Formatting},
+    io::Files,
 };
 use std::{
     fs,
-    error::Error
+    error::Error,
 };
 
 mod blacklist;
 
 #[derive(Deserialize)]
 pub struct Config {
-    date_range: [usize; 2],
-    time_range: [usize; 2],
-    content_start_char_pos: usize,
+    formatting: Formatting,
     files: Files,
     blacklist: Blacklist,
 }
@@ -29,16 +27,8 @@ impl Config {
         Ok(config)
     }
 
-    pub fn get_date_range(&self) -> (usize, usize) {
-        (self.date_range[0], self.date_range[1])
-    }
-
-    pub fn get_time_range(&self) -> (usize, usize) {
-        (self.time_range[0], self.time_range[1])
-    }
-
-    pub fn get_content_start_pos(&self) -> usize {
-        self.content_start_char_pos
+    pub fn formatting(&self) -> &Formatting {
+        &self.formatting
     }
 
     pub fn files(&self) -> &Files {
