@@ -1,8 +1,13 @@
-use std::error::Error;
-use std::fs;
 use serde::Deserialize;
-use self::blacklist::Blacklist;
-use crate::formatter;
+use crate::{
+    io::Files,
+    formatter,
+    config::blacklist::Blacklist,
+};
+use std::{
+    fs,
+    error::Error
+};
 
 mod blacklist;
 
@@ -11,8 +16,7 @@ pub struct Config {
     date_range: [usize; 2],
     time_range: [usize; 2],
     content_start_char_pos: usize,
-    raw_log_path: String,
-    output_directory: String,
+    files: Files,
     blacklist: Blacklist,
 }
 
@@ -37,16 +41,8 @@ impl Config {
         self.content_start_char_pos
     }
 
-    pub fn get_raw_log(&self) -> Result<String, Box<dyn Error>> {
-        let path = &self.raw_log_path;
-        println!("Reading raw log file...  ({path})");
-        let raw_log = fs::read_to_string(path)?;
-        println!("Loaded contents of raw log file!");
-        Ok(raw_log)
-    }
-
-    pub fn output_directory(&self) -> &String {
-        &self.output_directory
+    pub fn files(&self) -> &Files {
+        &self.files
     }
 
     pub fn blacklist(&self) -> &Blacklist {

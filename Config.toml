@@ -2,6 +2,7 @@ date_range = [0, 10] # inclusive - exclusive
 time_range = [11, 19] # inclusive - exclusive
 content_start_char_pos = 20
 
+[files]
 raw_log_path = "server.log"
 output_directory = "output"
 
