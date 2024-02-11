@@ -1,7 +1,10 @@
 use std::error::Error;
 use std::fs;
-use std::vec::IntoIter;
 use serde::Deserialize;
+use self::blacklist::Blacklist;
+use crate::formatter;
+
+mod blacklist;
 
 #[derive(Deserialize)]
 pub struct Config {
@@ -10,9 +13,7 @@ pub struct Config {
     content_start_char_pos: usize,
     raw_log_path: String,
     output_directory: String,
-    blacklist: Vec<String>,
-    auto_blacklist: bool,
-    auto_blacklist_percentage: f64,
+    blacklist: Blacklist,
 }
 
 impl Config {
@@ -48,20 +49,25 @@ impl Config {
         &self.output_directory
     }
 
-    pub fn get_blacklist(&self) -> IntoIter<String> {
-        let blacklist_clone = self.blacklist.clone();
-        blacklist_clone.into_iter()
+    pub fn blacklist(&self) -> &Blacklist {
+        &self.blacklist
     }
 
-    pub fn add_to_blacklist(&mut self, new_items: &mut Vec<String>) {
-        self.blacklist.append(new_items);
-    }
-
-    pub fn get_auto_blacklist(&self) -> bool {
-        self.auto_blacklist
-    }
-
-    pub fn get_auto_blacklist_percentage(&self) -> f64 {
-        self.auto_blacklist_percentage
+    pub fn auto_blacklist(&mut self, provided_log: &String) {
+        let auto_blacklist_passes = self.blacklist.get_auto_blacklist_passes();
+        println!("Engaging auto-blacklisting... ({auto_blacklist_passes} passes)");
+        for pass in 1..=auto_blacklist_passes {
+            let filtered_log = formatter::filter_log(&self, &provided_log);
+            let mut line_counts = formatter::get_line_counts(&self, &filtered_log);
+            let mut auto_blacklisted_lines: Vec<String> = Vec::new();
+            for line in line_counts.drain().filter(|x| x.1 > self.blacklist.get_auto_blacklist_percentage()) {
+                auto_blacklisted_lines.push(line.0.clone());
+                let key = line.0;
+                let val = (line.1 * 10000.).floor() / 10000.;
+                println!("Blacklisted (pass {pass}): {key} | {val}%")
+            }
+            self.blacklist.add_to_blacklist(&mut auto_blacklisted_lines);
+        }
+        println!("Auto-blacklisting complete!")
     }
 }

@@ -1,12 +1,11 @@
 use std::collections::HashMap;
-use conv::ConvUtil;
 use crate::config::Config;
 
 pub fn get_line_counts(config: &Config, raw_log: &String) -> HashMap<String, f64> {
     let mut line_counts: HashMap<String, f64> = HashMap::new();
     let trimmed_log = trim_line_starts(config.get_content_start_pos(), raw_log);
 
-    let raw_log_line_count: f64 = trimmed_log.lines().count().value_as().unwrap();
+    let raw_log_line_count = trimmed_log.lines().count() as f64;
     let inverse_total_line_count: f64 = 1f64 / raw_log_line_count;
     let single_line_percentage = inverse_total_line_count * 100.;
 
@@ -34,7 +33,7 @@ pub fn filter_log(config: &Config, raw_log: &String) -> String {
         |line| {
             let mut contains_illegal = false;
             let line = line.to_lowercase();
-            for item in config.get_blacklist() {
+            for item in config.blacklist().get_blacklist_iter() {
                 if line.contains(&item.to_lowercase()) {
                     contains_illegal = true;
                     break;
